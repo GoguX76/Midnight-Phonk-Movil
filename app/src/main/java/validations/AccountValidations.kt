@@ -1,6 +1,6 @@
 package validations
 
-object LoginValidations {
+object AccountValidations {
     fun isValidEmail(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
@@ -23,5 +23,12 @@ object LoginValidations {
             !isValidPassword(password) -> "La contraseña debe tener un mínimo de 6 caracteres"
             else -> null
         }
+    }
+
+    fun getConfirmPasswordError(password: String, confirmPassword: String): String? {
+        if (password != confirmPassword) {
+            return "Las contraseñas no coinciden"
+        }
+        return null
     }
 }

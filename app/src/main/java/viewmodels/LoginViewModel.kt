@@ -1,7 +1,7 @@
 package viewmodels
 
 import androidx.compose.runtime.*
-import validations.LoginValidations
+import validations.AccountValidations
 
 class LoginViewModel {
     var email by mutableStateOf("")
@@ -18,12 +18,12 @@ class LoginViewModel {
 
     fun updateEmail(newEmail: String) {
         email = newEmail
-        emailError = LoginValidations.getEmailError(newEmail)
+        emailError = AccountValidations.getEmailError(newEmail)
     }
 
     fun updatePassword(newPassword: String) {
         password = newPassword
-        passwordError = LoginValidations.getPasswordError(newPassword)
+        passwordError = AccountValidations.getPasswordError(newPassword)
     }
 
     fun isValid(): Boolean {

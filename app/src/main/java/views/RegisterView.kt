@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import viewmodels.LoginViewModel
+import viewmodels.RegisterViewModel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
@@ -16,8 +16,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun LoginView(onNavigateToRegister: () -> Unit) {
-    val viewModel = remember {LoginViewModel()}
+fun RegisterView(onNavigateToLogin: () -> Unit) {
+    val viewModel = remember { RegisterViewModel()}
 
     Column(
         modifier = Modifier
@@ -70,21 +70,36 @@ fun LoginView(onNavigateToRegister: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        OutlinedTextField(
+            value = viewModel.confirmPassword,
+            onValueChange = {viewModel.confirmPassword(it)},
+            label = {Text("Confirme su contraseña")},
+            visualTransformation = PasswordVisualTransformation(),
+            isError = viewModel.confirmPasswordError != null,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        if (viewModel.confirmPasswordError != null) {
+            Text(
+                text = viewModel.confirmPasswordError!!,
+                color = Color.Red,
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
+        }
+
         Button(
             onClick = {},
             enabled = viewModel.isValid(),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Iniciar sesión")
+            Text("Crear cuenta")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "¿No tienes una cuenta? Crea una aquí",
-            modifier = Modifier
-                .padding(16.dp)
-                .clickable { onNavigateToRegister() },
+            text = "¿Ya tienes una cuenta? Inicia sesión",
+            modifier = Modifier.clickable {onNavigateToLogin()},
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold
         )

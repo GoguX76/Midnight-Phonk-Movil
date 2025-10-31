@@ -15,6 +15,8 @@ import com.example.midnightphonk.ui.theme.MidnightPhonkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import views.LoginView
+import views.RegisterView
+import navigation.AppNavigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +24,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface {
-                    LoginView()
+                    AppNavigation()
                 }
             }
         }
