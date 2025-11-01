@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import views.HomeView
 import views.LoginView
 import views.RegisterView
 
@@ -16,7 +17,7 @@ import views.RegisterView
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = AppScreens.Register.route ) {
+    NavHost(navController = navController, startDestination = AppScreens.Login.route ) {
         composable(AppScreens.Register.route) {
             RegisterView(
                 onNavigateToLogin = {
@@ -24,14 +25,22 @@ fun AppNavigation() {
                 }
             )
         }
-        composable("login") {
+        composable(AppScreens.Login.route) {
             LoginView(
                 onNavigateToRegister = {
                     navController.navigate("register") {
                         popUpTo(AppScreens.Login.route) {inclusive = true}
                     }
+                },
+                onNavigateToHome = {
+                    navController.navigate("home") {
+                        popUpTo(AppScreens.Home.route) {inclusive = true}
+                    }
                 }
             )
+        }
+        composable(AppScreens.Home.route) {
+            HomeView()
         }
     }
 }

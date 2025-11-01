@@ -1,22 +1,42 @@
 package views
 
-import com.example.midnightphonk.R
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import viewmodels.RegisterViewModel
-import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.Image
-import androidx.compose.ui.res.painterResource
-import androidx.compose.foundation.clickable
-import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.midnightphonk.R
 import components.GradientBackground
+import viewmodels.RegisterViewModel
 
+
+@Composable
+fun AppTextFieldColorsRegister() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = Color.White,
+    unfocusedTextColor = Color.White,
+    cursorColor = Color.White,
+    focusedBorderColor = Color.White,
+    unfocusedBorderColor = Color.Gray,
+    focusedLabelColor = Color.White,
+    unfocusedLabelColor = Color.Gray
+)
+
+@Composable
+fun AppButtonColorsRegister() = ButtonDefaults.buttonColors(
+    containerColor = Color(0xFF6A0DAD),
+    contentColor = Color.White,
+    disabledContainerColor = Color.DarkGray,
+    disabledContentColor = Color.Gray
+)
 @Composable
 fun RegisterView(onNavigateToLogin: () -> Unit,
                  viewModel: RegisterViewModel = viewModel()
@@ -42,7 +62,8 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
                 value = viewModel.email,
                 onValueChange = { viewModel.updateEmail(it) },
                 label = { Text("Ingrese su correo") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppTextFieldColorsRegister()
             )
 
             if (viewModel.emailError != null) {
@@ -61,7 +82,8 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
                 label = { Text("Ingrese su contraseña") },
                 visualTransformation = PasswordVisualTransformation(),
                 isError = viewModel.passwordError != null,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppTextFieldColorsRegister()
             )
 
             if (viewModel.passwordError != null) {
@@ -76,11 +98,13 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
 
             OutlinedTextField(
                 value = viewModel.confirmPassword,
-                onValueChange = { viewModel.confirmPassword(it) },
+                onValueChange = { viewModel.updateConfirmPassword(it) },
                 label = { Text("Confirme su contraseña") },
                 visualTransformation = PasswordVisualTransformation(),
                 isError = viewModel.confirmPasswordError != null,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppTextFieldColorsRegister(),
+                textStyle = TextStyle(color = Color.White)
             )
 
             if (viewModel.confirmPasswordError != null) {
@@ -96,7 +120,8 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
             Button(
                 onClick = {},
                 enabled = viewModel.isValid(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppButtonColorsRegister()
             ) {
                 Text("Crear cuenta")
             }

@@ -19,7 +19,26 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import components.GradientBackground
 
 @Composable
+fun AppTextFieldColorsLogin() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = Color.White,
+    unfocusedTextColor = Color.White,
+    cursorColor = Color.White,
+    focusedBorderColor = Color.White,
+    unfocusedBorderColor = Color.Gray,
+    focusedLabelColor = Color.White,
+    unfocusedLabelColor = Color.Gray
+)
+
+@Composable
+fun AppButtonColorsLogin() = ButtonDefaults.buttonColors(
+    containerColor = Color(0xFF6A0DAD),
+    contentColor = Color.White,
+    disabledContainerColor = Color.DarkGray,
+    disabledContentColor = Color.Gray
+)
+@Composable
 fun LoginView(onNavigateToRegister: () -> Unit,
+              onNavigateToHome: () -> Unit,
               viewModel: LoginViewModel = viewModel()
 ) {
     GradientBackground{
@@ -42,7 +61,8 @@ fun LoginView(onNavigateToRegister: () -> Unit,
                 value = viewModel.email,
                 onValueChange = {viewModel.updateEmail(it) },
                 label = {Text("Ingrese su correo")},
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppTextFieldColorsLogin()
             )
 
             if (viewModel.emailError != null) {
@@ -61,7 +81,8 @@ fun LoginView(onNavigateToRegister: () -> Unit,
                 label = {Text("Ingrese su contraseña")},
                 visualTransformation = PasswordVisualTransformation(),
                 isError = viewModel.passwordError != null,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppTextFieldColorsLogin()
             )
 
             if (viewModel.passwordError != null) {
@@ -75,9 +96,11 @@ fun LoginView(onNavigateToRegister: () -> Unit,
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = {},
+                onClick = {onNavigateToHome()},
                 enabled = viewModel.isValid(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = AppButtonColorsLogin()
             ) {
                 Text("Iniciar sesión")
             }

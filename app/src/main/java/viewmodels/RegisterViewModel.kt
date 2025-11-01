@@ -35,11 +35,11 @@ class RegisterViewModel: ViewModel() {
         passwordError = AccountValidations.getPasswordError(newPassword)
 
         if (confirmPassword.isNotEmpty()) {
-            confirmPassword(confirmPassword)
+            updateConfirmPassword(confirmPassword)
         }
     }
 
-    fun confirmPassword(newSecPassword: String) {
+    fun updateConfirmPassword(newSecPassword: String) {
         confirmPassword = newSecPassword
         confirmPasswordError = AccountValidations.getConfirmPasswordError(password, newSecPassword)
     }
