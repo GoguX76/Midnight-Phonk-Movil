@@ -1,3 +1,4 @@
+
 package views
 
 import androidx.compose.foundation.layout.*
@@ -11,11 +12,12 @@ import androidx.compose.ui.unit.sp
 import components.GradientBackgroundHome
 
 @Composable
-fun HomeView() {
+fun HomeView(paddingValues: PaddingValues) {
     GradientBackgroundHome {
         Box(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
             Text(
