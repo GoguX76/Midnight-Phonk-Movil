@@ -4,8 +4,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import validations.AccountValidations
+import androidx.lifecycle.ViewModel
 
-class RegisterViewModel {
+class RegisterViewModel: ViewModel() {
     var email by mutableStateOf("")
         private set
 
@@ -32,13 +33,9 @@ class RegisterViewModel {
     fun updatePassword(newPassword: String) {
         password = newPassword
         passwordError = AccountValidations.getPasswordError(newPassword)
-    }
 
-    private fun updateConfirmPassword(newConfirmPassword: String) {
-        if (confirmPassword.isNotEmpty() && password != confirmPassword) {
-            confirmPasswordError = "Las contraseñas no coinciden"
-        } else {
-            confirmPasswordError = null
+        if (confirmPassword.isNotEmpty()) {
+            confirmPassword(confirmPassword)
         }
     }
 

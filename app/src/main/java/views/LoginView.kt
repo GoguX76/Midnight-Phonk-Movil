@@ -13,80 +13,85 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.composed
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
+import components.GradientBackground
 
 @Composable
-fun LoginView(onNavigateToRegister: () -> Unit) {
-    val viewModel = remember {LoginViewModel()}
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.midnight_phonk_logo),
-            contentDescription = "Midnight Phonk Logo",
+fun LoginView(onNavigateToRegister: () -> Unit,
+              viewModel: LoginViewModel = viewModel()
+) {
+    GradientBackground{
+        Column(
             modifier = Modifier
-                .size(120.dp)
-                .padding(bottom = 24.dp)
-        )
-
-        OutlinedTextField(
-            value = viewModel.email,
-            onValueChange = {viewModel.updateEmail(it) },
-            label = {Text("Ingrese su correo")},
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        if (viewModel.emailError != null) {
-            Text(
-                text = viewModel.emailError!!,
-                color = Color.Red,
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = viewModel.password,
-            onValueChange = {viewModel.updatePassword(it)},
-            label = {Text("Ingrese su contraseña")},
-            visualTransformation = PasswordVisualTransformation(),
-            isError = viewModel.passwordError != null,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        if (viewModel.passwordError != null) {
-            Text(
-                text = viewModel.passwordError!!,
-                color = Color.Red,
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {},
-            enabled = viewModel.isValid(),
-            modifier = Modifier.fillMaxWidth()
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Iniciar sesión")
+            Image(
+                painter = painterResource(id = R.drawable.midnight_phonk_logo),
+                contentDescription = "Midnight Phonk Logo",
+                modifier = Modifier
+                    .size(120.dp)
+                    .padding(bottom = 24.dp)
+            )
+
+            OutlinedTextField(
+                value = viewModel.email,
+                onValueChange = {viewModel.updateEmail(it) },
+                label = {Text("Ingrese su correo")},
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (viewModel.emailError != null) {
+                Text(
+                    text = viewModel.emailError!!,
+                    color = Color.Red,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = viewModel.password,
+                onValueChange = {viewModel.updatePassword(it)},
+                label = {Text("Ingrese su contraseña")},
+                visualTransformation = PasswordVisualTransformation(),
+                isError = viewModel.passwordError != null,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (viewModel.passwordError != null) {
+                Text(
+                    text = viewModel.passwordError!!,
+                    color = Color.Red,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {},
+                enabled = viewModel.isValid(),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Iniciar sesión")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "¿No tienes una cuenta? Crea una aquí",
+                modifier = Modifier
+                    .padding(16.dp)
+                    .clickable { onNavigateToRegister() },
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "¿No tienes una cuenta? Crea una aquí",
-            modifier = Modifier
-                .padding(16.dp)
-                .clickable { onNavigateToRegister() },
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold
-        )
     }
 }

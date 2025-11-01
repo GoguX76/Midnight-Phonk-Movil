@@ -2,8 +2,8 @@ package viewmodels
 
 import androidx.compose.runtime.*
 import validations.AccountValidations
-
-class LoginViewModel {
+import androidx.lifecycle.ViewModel
+class LoginViewModel: ViewModel() {
     var email by mutableStateOf("")
         private set
 

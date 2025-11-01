@@ -16,17 +16,19 @@ import views.RegisterView
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "register" ) {
-        composable("register") {
-            RegisterView {
-                navController.navigate("login")
-            }
+    NavHost(navController = navController, startDestination = AppScreens.Register.route ) {
+        composable(AppScreens.Register.route) {
+            RegisterView(
+                onNavigateToLogin = {
+                    navController.navigate(AppScreens.Login.route)
+                }
+            )
         }
         composable("login") {
             LoginView(
                 onNavigateToRegister = {
                     navController.navigate("register") {
-                        popUpTo("login") {inclusive = true}
+                        popUpTo(AppScreens.Login.route) {inclusive = true}
                     }
                 }
             )
