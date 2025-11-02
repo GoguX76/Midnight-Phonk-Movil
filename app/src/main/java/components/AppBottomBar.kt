@@ -2,7 +2,6 @@
 package components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,8 +22,9 @@ fun AppBottomBar(
 ) {
     val items = listOf(
         MainScreenRoutes.HOME to "Inicio",
-        MainScreenRoutes.ABOUT_US to "Quiénes somos",
-        MainScreenRoutes.CATALOG to "Catálogo"
+        MainScreenRoutes.ABOUT_US to "Nosotros",
+        MainScreenRoutes.CATALOG to "Catálogo",
+        MainScreenRoutes.CART to "Carrito"
     )
 
     val gradientColors = listOf(
@@ -38,11 +38,11 @@ fun AppBottomBar(
             .fillMaxWidth()
             .background(brush = Brush.verticalGradient(colors = gradientColors))
             .height(80.dp), // Typical height for a bottom app bar
-        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
         items.forEach { (route, label) ->
             NavigationBarItem(
+                modifier = Modifier.weight(1f),
                 icon = { },
                 label = { Text(label, color = Color.White) },
                 selected = currentRoute == route,

@@ -1,9 +1,11 @@
+
 package navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import views.AddProductView
 import views.LoginView
 import views.RegisterView
 import views.MainScreenView
@@ -44,8 +46,17 @@ fun AppNavigation() {
         }
 
         composable(AppScreens.Main.route) {
+            MainScreenView(
+                onNavigateToAddProduct = {
+                    navController.navigate(AppScreens.AddProduct.route)
+                }
+            )
+        }
 
-            MainScreenView()
+        composable(AppScreens.AddProduct.route) {
+            AddProductView(
+                onNavigateUp = { navController.navigateUp() }
+            )
         }
     }
 }

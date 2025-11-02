@@ -7,17 +7,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import components.AppBottomBar
 import navigation.MainScreenRoutes
+import viewmodels.CartViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreenView() {
+fun MainScreenView(onNavigateToAddProduct: () -> Unit) {
     val mainNavController = rememberNavController()
+    val cartViewModel: CartViewModel = viewModel()
 
     val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: MainScreenRoutes.HOME
@@ -26,6 +29,7 @@ fun MainScreenView() {
         MainScreenRoutes.HOME -> "Inicio"
         MainScreenRoutes.ABOUT_US -> "Quiénes somos"
         MainScreenRoutes.CATALOG -> "Catálogo"
+        MainScreenRoutes.CART -> "Carrito"
         else -> "Midnight Phonk"
     }
 
@@ -63,7 +67,17 @@ fun MainScreenView() {
                 AboutUsView(paddingValues = paddingValues)
             }
             composable(MainScreenRoutes.CATALOG) {
-                CatalogView(paddingValues = paddingValues)
+                CatalogView(
+                    paddingValues = paddingValues,
+                    onNavigateToAddProduct = onNavigateToAddProduct,
+                    cartViewModel = cartViewModel
+                )
+            }
+            composable(MainScreenRoutes.CART) {
+                CartView(
+                    paddingValues = paddingValues,
+                    cartViewModel = cartViewModel
+                )
             }
         }
     }
