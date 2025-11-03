@@ -52,7 +52,7 @@ class RegisterViewModel : ViewModel() {
                 confirmPassword.isNotEmpty()
     }
 
-    fun registerUser(): RegistrationResult {
+    suspend fun registerUser(): RegistrationResult {
         // Validar email vacío
         if (email.isBlank()) {
             return RegistrationResult.Error("El email no puede estar vacío")

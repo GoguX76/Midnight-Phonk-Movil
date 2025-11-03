@@ -17,6 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.midnightphonk.R
 import components.GradientBackground
 import viewmodels.RegisterViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -43,6 +44,7 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
 ) {
     var showError by remember { mutableStateOf<String?>(null) }
     var showSuccess by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     GradientBackground {
         Column(
@@ -121,15 +123,17 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
 
             Button(
                 onClick = {
-                    val result = viewModel.registerUser()
-                    when (result) {
-                        is viewmodels.RegistrationResult.Success -> {
-                            showSuccess = true
-                            showError = null
-                        }
-                        is viewmodels.RegistrationResult.Error -> {
-                            showError = result.message
-                            showSuccess = false
+                    coroutineScope.launch {
+                        val result = viewModel.registerUser()
+                        when (result) {
+                            is viewmodels.RegistrationResult.Success -> {
+                                showSuccess = true
+                                showError = null
+                            }
+                            is viewmodels.RegistrationResult.Error -> {
+                                showError = result.message
+                                showSuccess = false
+                            }
                         }
                     }
                 },

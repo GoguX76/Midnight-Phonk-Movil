@@ -1,44 +1,21 @@
 package data
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 /**
- * Repositorio simplificado que simula una base de datos usando una lista en memoria.
- * Los datos se perderán cuando cierres la aplicación.
+ * El Repositorio maneja el almacenamiento de usuarios.
+ * Ayuda a mantener el código organizado.
  */
 object UserRepository {
-
-    // Lista mutable que simula la base de datos
+    // Lista mutable privada para almacenar usuarios en memoria
     private val users = mutableListOf<User>()
 
-    // Contador para generar IDs automáticamente
-    private var nextId = 1
-
-    /**
-     * Inserta un nuevo usuario en la "base de datos"
-     */
-    fun insertUser(user: User) {
-        val newUser = user.copy(id = nextId++)
-        users.add(newUser)
+    suspend fun findUserByEmail(email: String): User? = withContext(Dispatchers.IO) {
+        users.find { it.email == email }
     }
 
-    /**
-     * Busca un usuario por email
-     */
-    fun findUserByEmail(email: String): User? {
-        return users.find { it.email == email }
-    }
-
-    /**
-     * Obtiene todos los usuarios (útil para debug)
-     */
-    fun getAllUsers(): List<User> {
-        return users.toList()
-    }
-
-    /**
-     * Elimina todos los usuarios (útil para testing)
-     */
-    fun clearAll() {
-        users.clear()
-        nextId = 1
+    suspend fun insertUser(user: User) = withContext(Dispatchers.IO) {
+        users.add(user)
     }
 }

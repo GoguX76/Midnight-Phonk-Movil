@@ -37,15 +37,6 @@
             </PendingDiffInfo>
           </value>
         </entry>
-        <entry key="$PROJECT_DIR$/app/src/main/java/data/UserRepository.kt">
-          <value>
-            <PendingDiffInfo>
-              <option name="filePath" value="$PROJECT_DIR$/app/src/main/java/data/UserRepository.kt" />
-              <option name="originalContent" value="package data&#10;&#10;/**&#10; * El Repositorio es una capa intermedia entre el ViewModel y la fuente de datos (el DAO).&#10; * Ayuda a mantener el código organizado.&#10; */&#10;class UserRepository(private val userDao: UserDao) {&#10;&#10;    suspend fun findUserByEmail(email: String): User? {&#10;        return userDao.findUserByEmail(email)&#10;    }&#10;&#10;    suspend fun insertUser(user: User) {&#10;        userDao.insertUser(user)&#10;    }&#10;}" />
-              <option name="updatedContent" value="package data&#10;&#10;/**&#10; * Repositorio simplificado que simula una base de datos usando una lista en memoria.&#10; * Los datos se perderán cuando cierres la aplicación.&#10; */&#10;object UserRepository {&#10;    &#10;    // Lista mutable que simula la base de datos&#10;    private val users = mutableListOf&lt;User&gt;()&#10;    &#10;    // Contador para generar IDs automáticamente&#10;    private var nextId = 1&#10;    &#10;    /**&#10;     * Inserta un nuevo usuario en la &quot;base de datos&quot;&#10;     */&#10;    fun insertUser(user: User) {&#10;        val newUser = user.copy(id = nextId++)&#10;        users.add(newUser)&#10;    }&#10;    &#10;    /**&#10;     * Busca un usuario por email&#10;     */&#10;    fun findUserByEmail(email: String): User? {&#10;        return users.find { it.email == email }&#10;    }&#10;    &#10;    /**&#10;     * Obtiene todos los usuarios (útil para debug)&#10;     */&#10;    fun getAllUsers(): List&lt;User&gt; {&#10;        return users.toList()&#10;    }&#10;    &#10;    /**&#10;     * Elimina todos los usuarios (útil para testing)&#10;     */&#10;    fun clearAll() {&#10;        users.clear()&#10;        nextId = 1&#10;    }&#10;}" />
-            </PendingDiffInfo>
-          </value>
-        </entry>
       </map>
     </option>
   </component>

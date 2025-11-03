@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import viewmodels.LoginViewModel
+import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
@@ -41,6 +42,7 @@ fun LoginView(onNavigateToRegister: () -> Unit,
               viewModel: LoginViewModel = viewModel()
 ) {
     var showError by remember { mutableStateOf<String?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     GradientBackground{
         Column(
@@ -98,14 +100,16 @@ fun LoginView(onNavigateToRegister: () -> Unit,
 
             Button(
                 onClick = {
-                    val result = viewModel.loginUser()
-                    when (result) {
-                        is viewmodels.LoginResult.Success -> {
-                            showError = null
-                            onNavigateToHome()
-                        }
-                        is viewmodels.LoginResult.Error -> {
-                            showError = result.message
+                    coroutineScope.launch {
+                        val result = viewModel.loginUser()
+                        when (result) {
+                            is viewmodels.LoginResult.Success -> {
+                                showError = null
+                                onNavigateToHome()
+                            }
+                            is viewmodels.LoginResult.Error -> {
+                                showError = result.message
+                            }
                         }
                     }
                 },

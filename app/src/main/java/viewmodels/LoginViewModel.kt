@@ -34,7 +34,7 @@ class LoginViewModel: ViewModel() {
                 email.isNotEmpty() && password.isNotEmpty()
     }
 
-    fun loginUser(): LoginResult {
+    suspend fun loginUser(): LoginResult {
         // Validar email vacío
         if (email.isBlank()) {
             return LoginResult.Error("El email no puede estar vacío")
