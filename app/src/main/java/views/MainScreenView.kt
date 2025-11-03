@@ -12,14 +12,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import components.AppBottomBar
+import navigation.AppScreens
 import navigation.MainScreenRoutes
 import viewmodels.CartViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreenView(onNavigateToAddProduct: () -> Unit) {
+fun MainScreenView(
+    onNavigateToAddProduct: () -> Unit,
+    onNavigateToProductDetail: (Int) -> Unit,
+    onNavigateToPurchaseResult: () -> Unit,
+    cartViewModel: CartViewModel
+) {
     val mainNavController = rememberNavController()
-    val cartViewModel: CartViewModel = viewModel()
 
     val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: MainScreenRoutes.HOME
@@ -52,13 +57,15 @@ fun MainScreenView(onNavigateToAddProduct: () -> Unit) {
                 CatalogView(
                     paddingValues = paddingValues,
                     onNavigateToAddProduct = onNavigateToAddProduct,
+                    onNavigateToProductDetail = onNavigateToProductDetail,
                     cartViewModel = cartViewModel
                 )
             }
             composable(MainScreenRoutes.CART) {
                 CartView(
                     paddingValues = paddingValues,
-                    cartViewModel = cartViewModel
+                    cartViewModel = cartViewModel,
+                    onNavigateToResult = onNavigateToPurchaseResult
                 )
             }
         }

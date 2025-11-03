@@ -1,4 +1,3 @@
-
 package views
 
 import androidx.compose.foundation.layout.*
@@ -15,12 +14,13 @@ import androidx.compose.ui.unit.sp
 import components.GradientBackgroundHome
 import data.CartItem
 import viewmodels.CartViewModel
-import java.util.Locale
 
 @Composable
-fun CartView(paddingValues: PaddingValues, cartViewModel: CartViewModel) {
-    val cartItems = cartViewModel.cartItems
-
+fun CartView(
+    paddingValues: PaddingValues,
+    cartViewModel: CartViewModel,
+    onNavigateToResult: () -> Unit
+) {
     GradientBackgroundHome {
         Column(
             modifier = Modifier
@@ -28,77 +28,80 @@ fun CartView(paddingValues: PaddingValues, cartViewModel: CartViewModel) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            if (cartItems.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Tu carrito está vacío", fontSize = 20.sp, color = Color.White)
+            Text(
+                text = "Carrito de Compras",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (cartViewModel.cartItems.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("El carrito está vacío", color = Color.White, fontSize = 20.sp)
                 }
             } else {
                 LazyColumn(modifier = Modifier.weight(1f)) {
-                    items(cartItems) { item ->
-                        CartItemRow(item = item, viewModel = cartViewModel)
-                        HorizontalDivider(color = Color.Gray)
+                    items(cartViewModel.cartItems) { item ->
+                        CartItemView(item = item, cartViewModel = cartViewModel)
                     }
                 }
-                CartSummary(viewModel = cartViewModel)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Total: $${cartViewModel.total}",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.End)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = { cartViewModel.completePurchase(onNavigateToResult) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Realizar Compra")
+                }
             }
         }
     }
 }
 
 @Composable
-fun CartItemRow(item: CartItem, viewModel: CartViewModel) {
-    Row(
+fun CartItemView(item: CartItem, cartViewModel: CartViewModel) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        colors = CardDefaults.cardColors(containerColor = Color.DarkGray.copy(alpha = 0.5f))
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(item.product.name, fontSize = 16.sp, color = Color.White)
-            Text("$${item.product.price}", fontSize = 14.sp, color = Color.Gray)
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { viewModel.updateQuantity(item, item.quantity - 1) }) {
-                Text("-", color = Color.White, fontSize = 20.sp)
-            }
-            Text("${item.quantity}", color = Color.White, modifier = Modifier.padding(horizontal = 8.dp))
-            IconButton(onClick = { viewModel.updateQuantity(item, item.quantity + 1) }) {
-                Text("+", color = Color.White, fontSize = 20.sp)
-            }
-            TextButton(onClick = { viewModel.removeFromCart(item) }) {
-                Text("Eliminar", color = Color.Red)
-            }
-        }
-    }
-}
-
-@Composable
-fun CartSummary(viewModel: CartViewModel) {
-    val subtotal = viewModel.getTotal()
-    val shipping = if (subtotal > 0) 5.0 else 0.0 // Example shipping cost
-    val total = subtotal + shipping
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        HorizontalDivider(color = Color.Gray, thickness = 1.dp, modifier = Modifier.padding(vertical = 8.dp))
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Subtotal", color = Color.White)
-            Text("$${String.format(Locale.US, "%.2f", subtotal)}", color = Color.White)
-        }
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Envío", color = Color.White)
-            Text("$${String.format(Locale.US, "%.2f", shipping)}", color = Color.White)
-        }
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Total", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text("$${String.format(Locale.US, "%.2f", total)}", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = { /* TODO: Implement Payment */ },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = viewModel.cartItems.isNotEmpty()
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Pagar")
+            Column {
+                Text(item.product.name, color = Color.White, fontSize = 18.sp)
+                Text("Precio: $${item.product.price}", color = Color.White, fontSize = 14.sp)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Button(onClick = { cartViewModel.updateQuantity(item, item.quantity - 1) }) {
+                    Text("-")
+                }
+                Text(
+                    text = "${item.quantity}",
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    fontSize = 18.sp
+                )
+                Button(onClick = { cartViewModel.updateQuantity(item, item.quantity + 1) }) {
+                    Text("+")
+                }
+            }
         }
     }
 }

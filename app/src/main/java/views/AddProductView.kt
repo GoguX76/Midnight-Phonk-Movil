@@ -1,6 +1,9 @@
 
 package views
 
+import android.app.Application
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -12,20 +15,27 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import components.GradientBackgroundHome
+import viewmodels.ProductViewModel
+import viewmodels.ProductViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProductView(onNavigateUp: () -> Unit) {
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
-    var stock by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("Categoría") }
+fun AddProductView(onProductAdded: () -> Unit, onNavigateUp: () -> Unit) {
+    val application = LocalContext.current.applicationContext as Application
+    val productViewModel: ProductViewModel = viewModel(factory = ProductViewModelFactory(application))
+
     var categoryExpanded by remember { mutableStateOf(false) }
     val categories = listOf("Sample Packs", "Sound Kits", "Plugins")
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri -> productViewModel.productImageUri = uri }
+    )
 
     GradientBackgroundHome {
         Scaffold(
@@ -54,8 +64,8 @@ fun AddProductView(onNavigateUp: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
+                    value = productViewModel.productName,
+                    onValueChange = { productViewModel.productName = it },
                     label = { Text("Nombre *") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
@@ -71,8 +81,8 @@ fun AddProductView(onNavigateUp: () -> Unit) {
                     )
                 )
                 OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
+                    value = productViewModel.productDescription,
+                    onValueChange = { productViewModel.productDescription = it },
                     label = { Text("Descripción") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
@@ -88,8 +98,8 @@ fun AddProductView(onNavigateUp: () -> Unit) {
                     )
                 )
                 OutlinedTextField(
-                    value = price,
-                    onValueChange = { price = it },
+                    value = productViewModel.productPrice,
+                    onValueChange = { productViewModel.productPrice = it },
                     label = { Text("Precio *") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -106,8 +116,8 @@ fun AddProductView(onNavigateUp: () -> Unit) {
                     )
                 )
                 OutlinedTextField(
-                    value = stock,
-                    onValueChange = { stock = it },
+                    value = productViewModel.productStock,
+                    onValueChange = { productViewModel.productStock = it },
                     label = { Text("Stock") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -130,7 +140,7 @@ fun AddProductView(onNavigateUp: () -> Unit) {
                         onClick = { categoryExpanded = true },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(category, color = Color.White)
+                        Text(productViewModel.productCategory, color = Color.White)
                         Spacer(Modifier.weight(1f))
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
@@ -147,7 +157,7 @@ fun AddProductView(onNavigateUp: () -> Unit) {
                             DropdownMenuItem(
                                 text = { Text(cat) },
                                 onClick = {
-                                    category = cat
+                                    productViewModel.productCategory = cat
                                     categoryExpanded = false
                                 }
                             )
@@ -157,12 +167,12 @@ fun AddProductView(onNavigateUp: () -> Unit) {
 
                 // Photo Picker
                 OutlinedButton(
-                    onClick = { /* TODO: Implement Photo Picker */ },
+                    onClick = { imagePickerLauncher.launch("image/*") },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Foto (Picker)", color = Color.White)
+                    Text(productViewModel.productImageUri?.let { "Imagen seleccionada" } ?: "Foto (Picker)", color = Color.White)
                 }
-                
+
                 Spacer(Modifier.weight(1f))
 
                 // Save/Cancel Buttons
@@ -174,7 +184,7 @@ fun AddProductView(onNavigateUp: () -> Unit) {
                         Text("Cancelar")
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = { /* TODO: Implement Save */ onNavigateUp() }) {
+                    Button(onClick = { productViewModel.saveProduct(onProductAdded) }) {
                         Text("Guardar")
                     }
                 }

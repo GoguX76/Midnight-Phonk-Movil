@@ -1,6 +1,6 @@
-
 package views
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,25 +17,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import components.GradientBackgroundHome
 import data.Product
+import data.ProductRepository
+import kotlinx.coroutines.launch
 import viewmodels.CartViewModel
-
-val productList = listOf(
-    Product(1, "Item Producto 1", 10.0),
-    Product(2, "Item Producto 2", 18.0),
-    Product(3, "Item Producto 3", 6.0),
-    Product(4, "Item Producto 4", 12.5),
-    Product(5, "Item Producto 5", 25.0),
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogView(
     paddingValues: PaddingValues,
     onNavigateToAddProduct: () -> Unit,
+    onNavigateToProductDetail: (Int) -> Unit,
     cartViewModel: CartViewModel
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var sortOption by remember { mutableStateOf("Ordenar por") }
+    var products by remember { mutableStateOf(emptyList<Product>()) }
+    val coroutineScope = rememberCoroutineScope()
+
+    fun loadProducts() {
+        coroutineScope.launch {
+            products = ProductRepository.getAllProducts()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        loadProducts()
+    }
 
     GradientBackgroundHome {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -45,12 +52,21 @@ fun CatalogView(
                     .padding(paddingValues)
                     .padding(16.dp)
             ) {
-                Text(
-                    text = "Productos",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Productos",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    IconButton(onClick = { onNavigateToAddProduct() }) {
+                        Icon(Icons.Default.Add, contentDescription = "Añadir Producto", tint = Color.White)
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -105,20 +121,14 @@ fun CatalogView(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(productList.filter { it.name.contains(searchQuery, ignoreCase = true) }) { product ->
-                        ProductItem(product = product, onNavigateToAddProduct = onNavigateToAddProduct)
+                    items(products.filter { it.name.contains(searchQuery, ignoreCase = true) }) { product ->
+                        ProductItem(
+                            product = product,
+                            onProductClick = { onNavigateToProductDetail(product.id) },
+                            cartViewModel = cartViewModel
+                        )
                     }
                 }
-            }
-            FloatingActionButton(
-                onClick = { onNavigateToAddProduct() },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp),
-                containerColor = Color.White,
-                contentColor = Color.Black
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = "Añadir Producto")
             }
         }
     }
@@ -127,10 +137,13 @@ fun CatalogView(
 @Composable
 fun ProductItem(
     product: Product,
-    onNavigateToAddProduct: () -> Unit
+    onProductClick: () -> Unit,
+    cartViewModel: CartViewModel
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onProductClick() },
         colors = CardDefaults.cardColors(containerColor = Color.DarkGray.copy(alpha = 0.5f))
     ) {
         Row(
@@ -141,8 +154,8 @@ fun ProductItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = product.name, color = Color.White, fontSize = 16.sp)
-            Button(onClick = { onNavigateToAddProduct() }) {
-                Text("Agregar +")
+            Button(onClick = { cartViewModel.addToCart(product) }) {
+                Text("Añadir al carrito")
             }
         }
     }

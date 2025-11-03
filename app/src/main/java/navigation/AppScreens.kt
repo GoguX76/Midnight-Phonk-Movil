@@ -7,6 +7,8 @@ sealed class AppScreens(val route: String) {
     object Register : AppScreens("register")
     object Main : AppScreens("main")
     object AddProduct : AppScreens("add_product")
+    object ProductDetail : AppScreens("product_detail")
+    object PurchaseResult : AppScreens("purchase_result")
 }
 
 // Rutas INTERNAS de la pantalla principal (para la barra de navegación)
