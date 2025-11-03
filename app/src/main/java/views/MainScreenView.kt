@@ -6,7 +6,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,24 +24,7 @@ fun MainScreenView(onNavigateToAddProduct: () -> Unit) {
     val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: MainScreenRoutes.HOME
 
-    val currentTitle = when (currentRoute) {
-        MainScreenRoutes.HOME -> "Inicio"
-        MainScreenRoutes.ABOUT_US -> "Quiénes somos"
-        MainScreenRoutes.CATALOG -> "Catálogo"
-        MainScreenRoutes.CART -> "Carrito"
-        else -> "Midnight Phonk"
-    }
-
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(currentTitle) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF6A0DAD),
-                    titleContentColor = Color.White
-                )
-            )
-        },
         bottomBar = {
             AppBottomBar(
                 currentRoute = currentRoute,

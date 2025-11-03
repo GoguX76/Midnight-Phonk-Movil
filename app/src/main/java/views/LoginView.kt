@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.clickable
-import androidx.compose.ui.composed
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import components.GradientBackground
@@ -41,6 +40,8 @@ fun LoginView(onNavigateToRegister: () -> Unit,
               onNavigateToHome: () -> Unit,
               viewModel: LoginViewModel = viewModel()
 ) {
+    var showError by remember { mutableStateOf<String?>(null) }
+
     GradientBackground{
         Column(
             modifier = Modifier
@@ -53,7 +54,7 @@ fun LoginView(onNavigateToRegister: () -> Unit,
                 painter = painterResource(id = R.drawable.midnight_phonk_logo),
                 contentDescription = "Midnight Phonk Logo",
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(200.dp)
                     .padding(bottom = 24.dp)
             )
 
@@ -96,13 +97,32 @@ fun LoginView(onNavigateToRegister: () -> Unit,
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = {onNavigateToHome()},
+                onClick = {
+                    val result = viewModel.loginUser()
+                    when (result) {
+                        is viewmodels.LoginResult.Success -> {
+                            showError = null
+                            onNavigateToHome()
+                        }
+                        is viewmodels.LoginResult.Error -> {
+                            showError = result.message
+                        }
+                    }
+                },
                 enabled = viewModel.isValid(),
                 modifier = Modifier
                     .fillMaxWidth(),
                 colors = AppButtonColorsLogin()
             ) {
                 Text("Iniciar sesión")
+            }
+
+            if (showError != null) {
+                Text(
+                    text = showError!!,
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))

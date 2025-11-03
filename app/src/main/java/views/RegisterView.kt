@@ -41,6 +41,8 @@ fun AppButtonColorsRegister() = ButtonDefaults.buttonColors(
 fun RegisterView(onNavigateToLogin: () -> Unit,
                  viewModel: RegisterViewModel = viewModel()
 ) {
+    var showError by remember { mutableStateOf<String?>(null) }
+    var showSuccess by remember { mutableStateOf(false) }
 
     GradientBackground {
         Column(
@@ -54,7 +56,7 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
                 painter = painterResource(id = R.drawable.midnight_phonk_logo),
                 contentDescription = "Midnight Phonk Logo",
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(200.dp)
                     .padding(bottom = 24.dp)
             )
 
@@ -118,12 +120,40 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = {},
+                onClick = {
+                    val result = viewModel.registerUser()
+                    when (result) {
+                        is viewmodels.RegistrationResult.Success -> {
+                            showSuccess = true
+                            showError = null
+                        }
+                        is viewmodels.RegistrationResult.Error -> {
+                            showError = result.message
+                            showSuccess = false
+                        }
+                    }
+                },
                 enabled = viewModel.isValid(),
                 modifier = Modifier.fillMaxWidth(),
                 colors = AppButtonColorsRegister()
             ) {
                 Text("Crear cuenta")
+            }
+
+            if (showError != null) {
+                Text(
+                    text = showError!!,
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            if (showSuccess) {
+                Text(
+                    text = "¡Cuenta creada exitosamente!",
+                    color = Color.Green,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
