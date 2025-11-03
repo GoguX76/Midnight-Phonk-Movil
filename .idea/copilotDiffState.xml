@@ -28,15 +28,6 @@
             </PendingDiffInfo>
           </value>
         </entry>
-        <entry key="$PROJECT_DIR$/app/src/main/java/data/User.kt">
-          <value>
-            <PendingDiffInfo>
-              <option name="filePath" value="$PROJECT_DIR$/app/src/main/java/data/User.kt" />
-              <option name="originalContent" value="package data&#10;&#10;import androidx.room.Entity&#10;import androidx.room.PrimaryKey&#10;&#10;@Entity&#10;data class User (&#10;    @PrimaryKey(autoGenerate = true) val id: Int = 0,&#10;    val email: String,&#10;    val passwordHash: String,&#10;    val name: String = &quot;&quot;,&#10;)" />
-              <option name="updatedContent" value="package data&#10;&#10;// Modelo simple de datos sin Room&#10;data class User(&#10;    val id: Int = 0,&#10;    val email: String,&#10;    val passwordHash: String,&#10;    val name: String = &quot;&quot;&#10;)" />
-            </PendingDiffInfo>
-          </value>
-        </entry>
       </map>
     </option>
   </component>
