@@ -51,4 +51,39 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
             onProductSaved()
         }
     }
+
+    fun loadProduct(product: Product) {
+        productName = product.name
+        productDescription = product.description
+        productPrice = product.price.toString()
+        productStock = product.stock.toString()
+        productCategory = product.category
+        // La imagen existente no se carga, el usuario puede seleccionar una nueva si lo desea.
+        productImageUri = null
+    }
+
+    fun updateProduct(productId: Int, onProductUpdated: () -> Unit) {
+        viewModelScope.launch {
+            val existingProduct = ProductRepository.findProductByIdl(productId)
+            val imageUrl = withContext(Dispatchers.IO) {
+                if (productImageUri != null) {
+                    saveImageToInternalStorage(productImageUri!!)
+                } else {
+                    existingProduct?.imageUrl ?: ""
+                }
+            }
+
+            val updatedProduct = Product(
+                id = productId,
+                name = productName,
+                description = productDescription,
+                price = productPrice.toDoubleOrNull() ?: 0.0,
+                imageUrl = imageUrl,
+                stock = productStock.toIntOrNull() ?: 0,
+                category = productCategory
+            )
+            ProductRepository.updateProduct(updatedProduct)
+            onProductUpdated()
+        }
+    }
 }

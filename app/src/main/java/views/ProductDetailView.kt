@@ -21,6 +21,7 @@ fun ProductDetailView(
     productId: Int,
     onNavigateUp: () -> Unit,
     onProductDeleted: () -> Unit,
+    onNavigateToEditProduct: (Int) -> Unit, // Nuevo callback
     cartViewModel: CartViewModel
 ) {
     var product by remember { mutableStateOf<Product?>(null) }
@@ -88,6 +89,9 @@ fun ProductDetailView(
                         Button(onClick = { cartViewModel.addToCart(p) }) {
                             Text("Añadir al carrito", style = MaterialTheme.typography.labelLarge)
                         }
+                        Button(onClick = { onNavigateToEditProduct(p.id) }) { // Botón de Editar
+                            Text("Editar")
+                        }
                         Button(
                             onClick = {
                                 coroutineScope.launch {
@@ -97,7 +101,7 @@ fun ProductDetailView(
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                         ) {
-                            Text("Eliminar producto", style = MaterialTheme.typography.labelLarge)
+                            Text("Eliminar", style = MaterialTheme.typography.labelLarge)
                         }
                     }
                 }
@@ -105,4 +109,3 @@ fun ProductDetailView(
         }
     }
 }
-

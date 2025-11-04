@@ -8,12 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import views.AddProductView
-import views.LoginView
-import views.RegisterView
-import views.MainScreenView
-import views.ProductDetailView
-import views.PurchaseResultView
+import views.*
 import viewmodels.CartViewModel
 
 @Composable
@@ -63,6 +58,7 @@ fun AppNavigation() {
                 onNavigateUp = { navController.navigateUp() }
             )
         }
+
         composable(
             route = "${AppScreens.ProductDetail.route}/{productId}",
             arguments = listOf(navArgument("productId") { type = NavType.IntType })
@@ -72,7 +68,20 @@ fun AppNavigation() {
                 productId = productId,
                 onNavigateUp = { navController.navigateUp() },
                 onProductDeleted = { navController.popBackStack() },
+                onNavigateToEditProduct = { navController.navigate("${AppScreens.EditProduct.route}/$it") },
                 cartViewModel = cartViewModel
+            )
+        }
+
+        composable(
+            route = "${AppScreens.EditProduct.route}/{productId}",
+            arguments = listOf(navArgument("productId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getInt("productId") ?: 0
+            EditProductView(
+                productId = productId,
+                onProductUpdated = { navController.popBackStack() },
+                onNavigateUp = { navController.navigateUp() }
             )
         }
 
