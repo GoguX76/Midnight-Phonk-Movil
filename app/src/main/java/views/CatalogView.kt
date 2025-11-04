@@ -1,9 +1,12 @@
 package views
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -12,12 +15,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import components.GradientBackgroundHome
 import data.Product
 import data.ProductRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import viewmodels.CartViewModel
 
@@ -59,11 +62,25 @@ fun CatalogView(
                 ) {
                     Text(
                         text = "Productos",
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
                         color = Color.White
                     )
-                    IconButton(onClick = { onNavigateToAddProduct() }) {
+
+                    // Animación de rotación en el botón de agregar
+                    var isRotating by remember { mutableStateOf(false) }
+                    val rotation by animateFloatAsState(
+                        targetValue = if (isRotating) 180f else 0f,
+                        animationSpec = tween(300, easing = FastOutSlowInEasing),
+                        label = "addRotation"
+                    )
+
+                    IconButton(
+                        onClick = {
+                            isRotating = !isRotating
+                            onNavigateToAddProduct()
+                        },
+                        modifier = Modifier.graphicsLayer { rotationZ = rotation }
+                    ) {
                         Icon(Icons.Default.Add, contentDescription = "Añadir Producto", tint = Color.White)
                     }
                 }
@@ -96,7 +113,7 @@ fun CatalogView(
                         onClick = { expanded = true },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(sortOption, color = Color.White)
+                        Text(sortOption, style = MaterialTheme.typography.bodyMedium, color = Color.White)
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
                             contentDescription = "Ordenar por",
@@ -108,11 +125,11 @@ fun CatalogView(
                         onDismissRequest = { expanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Precio") },
+                            text = { Text("Precio", style = MaterialTheme.typography.bodyMedium) },
                             onClick = { sortOption = "Precio"; expanded = false }
                         )
                         DropdownMenuItem(
-                            text = { Text("Nombre") },
+                            text = { Text("Nombre", style = MaterialTheme.typography.bodyMedium) },
                             onClick = { sortOption = "Nombre"; expanded = false }
                         )
                     }
@@ -121,12 +138,29 @@ fun CatalogView(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(products.filter { it.name.contains(searchQuery, ignoreCase = true) }) { product ->
-                        ProductItem(
-                            product = product,
-                            onProductClick = { onNavigateToProductDetail(product.id) },
-                            cartViewModel = cartViewModel
-                        )
+                    itemsIndexed(products.filter { it.name.contains(searchQuery, ignoreCase = true) }) { index, product ->
+                        // Animación 4: Aparición escalonada de productos
+                        var isVisible by remember { mutableStateOf(false) }
+
+                        LaunchedEffect(product.id) {
+                            delay(index * 100L)
+                            isVisible = true
+                        }
+
+                        AnimatedVisibility(
+                            visible = isVisible,
+                            enter = fadeIn(animationSpec = tween(400)) +
+                                    slideInVertically(
+                                        initialOffsetY = { 50 },
+                                        animationSpec = tween(400)
+                                    )
+                        ) {
+                            ProductItem(
+                                product = product,
+                                onProductClick = { onNavigateToProductDetail(product.id) },
+                                cartViewModel = cartViewModel
+                            )
+                        }
                     }
                 }
             }
@@ -140,6 +174,24 @@ fun ProductItem(
     onProductClick: () -> Unit,
     cartViewModel: CartViewModel
 ) {
+    // Animación 5: Feedback visual al agregar al carrito
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "buttonScale"
+    )
+
+    LaunchedEffect(isPressed) {
+        if (isPressed) {
+            delay(150)
+            isPressed = false
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,10 +205,20 @@ fun ProductItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = product.name, color = Color.White, fontSize = 16.sp)
-            Button(onClick = { cartViewModel.addToCart(product) }) {
-                Text("Añadir al carrito")
+            Text(text = product.name, style = MaterialTheme.typography.titleLarge, color = Color.White)
+            Button(
+                onClick = {
+                    isPressed = true
+                    cartViewModel.addToCart(product)
+                },
+                modifier = Modifier.graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                }
+            ) {
+                Text("Añadir al carrito", style = MaterialTheme.typography.labelLarge)
             }
         }
     }
 }
+

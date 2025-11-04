@@ -1,4 +1,3 @@
-
 package views
 
 import android.app.Application
@@ -140,7 +139,7 @@ fun AddProductView(onProductAdded: () -> Unit, onNavigateUp: () -> Unit) {
                         onClick = { categoryExpanded = true },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(productViewModel.productCategory, color = Color.White)
+                        Text(productViewModel.productCategory, style = MaterialTheme.typography.bodyMedium, color = Color.White)
                         Spacer(Modifier.weight(1f))
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
@@ -155,7 +154,7 @@ fun AddProductView(onProductAdded: () -> Unit, onNavigateUp: () -> Unit) {
                     ) {
                         categories.forEach { cat ->
                             DropdownMenuItem(
-                                text = { Text(cat) },
+                                text = { Text(cat, style = MaterialTheme.typography.bodyMedium) },
                                 onClick = {
                                     productViewModel.productCategory = cat
                                     categoryExpanded = false
@@ -170,7 +169,7 @@ fun AddProductView(onProductAdded: () -> Unit, onNavigateUp: () -> Unit) {
                     onClick = { imagePickerLauncher.launch("image/*") },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(productViewModel.productImageUri?.let { "Imagen seleccionada" } ?: "Foto (Picker)", color = Color.White)
+                    Text(productViewModel.productImageUri?.let { "Imagen seleccionada" } ?: "Foto (Picker)", style = MaterialTheme.typography.bodyMedium, color = Color.White)
                 }
 
                 Spacer(Modifier.weight(1f))
@@ -181,14 +180,15 @@ fun AddProductView(onProductAdded: () -> Unit, onNavigateUp: () -> Unit) {
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onNavigateUp) {
-                        Text("Cancelar")
+                        Text("Cancelar", style = MaterialTheme.typography.labelLarge)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(onClick = { productViewModel.saveProduct(onProductAdded) }) {
-                        Text("Guardar")
+                        Text("Guardar", style = MaterialTheme.typography.labelLarge)
                     }
                 }
             }
         }
     }
 }
+

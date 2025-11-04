@@ -1,16 +1,13 @@
 package views
 
-import androidx.compose.foundation.layout.* 
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import components.GradientBackgroundHome
 import data.Product
@@ -72,25 +69,24 @@ fun ProductDetailView(
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = p.name,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineSmall,
                         color = Color.White
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = p.description, fontSize = 16.sp, color = Color.White)
+                    Text(text = p.description, style = MaterialTheme.typography.bodyMedium, color = Color.White)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Categoría: ${p.category}", fontSize = 16.sp, color = Color.White)
+                    Text(text = "Categoría: ${p.category}", style = MaterialTheme.typography.bodyMedium, color = Color.White)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Precio: $${p.price}", fontSize = 20.sp, color = Color.White)
+                    Text(text = "Precio: $${p.price}", style = MaterialTheme.typography.titleLarge, color = Color.White)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "En stock: ${p.stock}", fontSize = 16.sp, color = Color.White)
+                    Text(text = "En stock: ${p.stock}", style = MaterialTheme.typography.bodySmall, color = Color.White)
                     Spacer(modifier = Modifier.weight(1f))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Button(onClick = { cartViewModel.addToCart(p) }) {
-                            Text("Añadir al carrito")
+                            Text("Añadir al carrito", style = MaterialTheme.typography.labelLarge)
                         }
                         Button(
                             onClick = {
@@ -101,7 +97,7 @@ fun ProductDetailView(
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                         ) {
-                            Text("Eliminar producto")
+                            Text("Eliminar producto", style = MaterialTheme.typography.labelLarge)
                         }
                     }
                 }
@@ -109,3 +105,4 @@ fun ProductDetailView(
         }
     }
 }
+

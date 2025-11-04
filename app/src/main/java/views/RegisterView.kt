@@ -9,8 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -62,6 +60,13 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
                     .padding(bottom = 24.dp)
             )
 
+            Text(
+                text = "Crear Cuenta",
+                style = MaterialTheme.typography.displayMedium,
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
+
             OutlinedTextField(
                 value = viewModel.email,
                 onValueChange = { viewModel.updateEmail(it) },
@@ -73,6 +78,7 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
             if (viewModel.emailError != null) {
                 Text(
                     text = viewModel.emailError!!,
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color.Red,
                     modifier = Modifier.padding(start = 16.dp, top = 4.dp)
                 )
@@ -93,6 +99,7 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
             if (viewModel.passwordError != null) {
                 Text(
                     text = viewModel.passwordError!!,
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color.Red,
                     modifier = Modifier.padding(start = 16.dp, top = 4.dp)
                 )
@@ -107,13 +114,13 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
                 visualTransformation = PasswordVisualTransformation(),
                 isError = viewModel.confirmPasswordError != null,
                 modifier = Modifier.fillMaxWidth(),
-                colors = AppTextFieldColorsRegister(),
-                textStyle = TextStyle(color = Color.White)
+                colors = AppTextFieldColorsRegister()
             )
 
             if (viewModel.confirmPasswordError != null) {
                 Text(
                     text = viewModel.confirmPasswordError!!,
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color.Red,
                     modifier = Modifier.padding(start = 16.dp, top = 4.dp)
                 )
@@ -141,12 +148,13 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
                 modifier = Modifier.fillMaxWidth(),
                 colors = AppButtonColorsRegister()
             ) {
-                Text("Crear cuenta")
+                Text("Crear cuenta", style = MaterialTheme.typography.labelLarge)
             }
 
             if (showError != null) {
                 Text(
                     text = showError!!,
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color.Red,
                     modifier = Modifier.padding(top = 8.dp)
                 )
@@ -155,6 +163,7 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
             if (showSuccess) {
                 Text(
                     text = "¡Cuenta creada exitosamente!",
+                    style = MaterialTheme.typography.bodyMedium,
                     color = Color.Green,
                     modifier = Modifier.padding(top = 8.dp)
                 )
@@ -164,10 +173,11 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
 
             Text(
                 text = "¿Ya tienes una cuenta? Inicia sesión",
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.clickable { onNavigateToLogin() },
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
 }
+
