@@ -53,20 +53,27 @@ class CartViewModel : ViewModel() {
 
     fun completePurchase(onPurchaseCompleted: () -> Unit) {
         viewModelScope.launch {
+            val productsInRepo = _cartItems.map { item ->
+                ProductRepository.findProductByIdl(item.product.id) to item
+            }
+
             // 1. Verificar el stock
-            for (item in _cartItems) {
-                val productInRepo = ProductRepository.findProductByIdl(item.product.id)
-                if (productInRepo == null || item.quantity > productInRepo.stock) {
-                    purchaseResult = "No hay suficiente stock para ${item.product.name}. Compra rechazada."
-                    onPurchaseCompleted() // Navega a la pantalla de resultados (incluso si falla)
-                    return@launch
-                }
+            val outOfStockItem = productsInRepo.find { (product, cartItem) ->
+                product == null || cartItem.quantity > product.stock
+            }
+
+            if (outOfStockItem != null) {
+                val (product, cartItem) = outOfStockItem
+                val productName = product?.name ?: cartItem.product.name
+                purchaseResult = "No hay suficiente stock para $productName. Compra rechazada."
+                onPurchaseCompleted()
+                return@launch
             }
 
             // 2. Actualizar el repositorio si hay stock
-            for (item in _cartItems) {
-                val productInRepo = ProductRepository.findProductByIdl(item.product.id)!!
-                val updatedProduct = productInRepo.copy(stock = productInRepo.stock - item.quantity)
+            for ((product, item) in productsInRepo) {
+                // product no puede ser nulo aquí por la comprobación anterior
+                val updatedProduct = product!!.copy(stock = product.stock - item.quantity)
                 ProductRepository.updateProduct(updatedProduct)
             }
 
