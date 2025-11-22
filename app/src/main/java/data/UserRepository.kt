@@ -1,60 +1,55 @@
 package data
 
-import android.content.Context
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.File
+import data.network.ApiResult
+import data.network.RetrofitClient
+import data.network.safeApiCall
 
+// Repositorio para manejar usuarios
 object UserRepository {
-    private val users = mutableListOf<User>()
-    private val gson = Gson()
-    private lateinit var usersFile: File
 
-    private var usersLoaded = false
-
-    // Debe llamarse desde la clase Application para inicializar el repositorio.
-    fun initialize(context: Context) {
-        usersFile = File(context.filesDir, "users.json")
+    // Obtiene todos los usuarios
+    suspend fun getAllUsers(): ApiResult<List<User>> {
+        return safeApiCall { RetrofitClient.apiService.getAllUsers() }
     }
 
-    private fun loadUsersFromFile() {
-        if (usersFile.exists()) {
-            val json = usersFile.readText()
-            if (json.isNotBlank()) {
-                val type = object : TypeToken<MutableList<User>>() {}.type
-                val loadedUsers: MutableList<User>? = gson.fromJson(json, type)
-                if (loadedUsers != null) {
-                    users.clear()
-                    users.addAll(loadedUsers)
-                }
+    // Busca un usuario por ID
+    suspend fun getUserById(id: Long): ApiResult<User> {
+        return safeApiCall { RetrofitClient.apiService.getUserById(id) }
+    }
+
+    // Busca un usuario por email (obtiene todos y filtra)
+    suspend fun findUserByEmail(email: String): ApiResult<User?> {
+        return when (val result = getAllUsers()) {
+            is ApiResult.Success -> {
+                val user = result.data.find { it.email == email }
+                ApiResult.Success(user)
             }
+            is ApiResult.Error -> ApiResult.Error(result.message, result.exception)
+            is ApiResult.Loading -> ApiResult.Loading
         }
-        usersLoaded = true
     }
 
-    private fun saveUsersToFile() {
-        val json = gson.toJson(users)
-        usersFile.writeText(json)
+    // Crea un nuevo usuario
+    suspend fun insertUser(user: User): ApiResult<User> {
+        return safeApiCall { RetrofitClient.apiService.createUser(user) }
     }
 
-    suspend fun findUserByEmail(email: String): User? = withContext(Dispatchers.IO) {
-        if (!usersLoaded) {
-            loadUsersFromFile()
-        }
-        users.find { it.email == email }
+    // Actualiza un usuario existente
+    suspend fun updateUser(user: User): ApiResult<User> {
+        return safeApiCall { RetrofitClient.apiService.updateUser(user.id.toLong(), user) }
     }
 
-    suspend fun insertUser(user: User) = withContext(Dispatchers.IO) {
-        if (!usersLoaded) {
-            loadUsersFromFile()
+    // Elimina un usuario por ID
+    suspend fun deleteUser(id: Long): ApiResult<Boolean> {
+        return try {
+            val response = RetrofitClient.apiService.deleteUser(id)
+            if (response.isSuccessful) {
+                ApiResult.Success(true)
+            } else {
+                ApiResult.Error("Error al eliminar usuario: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            ApiResult.Error("Error al eliminar usuario: ${e.message}", e)
         }
-        // Generar un nuevo ID único
-        val newId = (users.maxOfOrNull { it.id } ?: 0) + 1
-        val newUser = user.copy(id = newId)
-
-        users.add(newUser)
-        saveUsersToFile()
     }
 }

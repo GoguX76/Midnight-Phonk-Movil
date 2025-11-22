@@ -28,7 +28,11 @@ fun ProductDetailView(
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(productId) {
-        product = ProductRepository.findProductByIdl(productId)
+        when (val result = ProductRepository.findProductById(productId.toLong())) {
+            is data.network.ApiResult.Success -> product = result.data
+            is data.network.ApiResult.Error -> { /* Mostrar error */ }
+            is data.network.ApiResult.Loading -> { /* No usado */ }
+        }
     }
 
     GradientBackgroundHome {
@@ -95,7 +99,7 @@ fun ProductDetailView(
                         Button(
                             onClick = {
                                 coroutineScope.launch {
-                                    ProductRepository.deleteProduct(p.id)
+                                    ProductRepository.deleteProduct(p.id.toLong())
                                     onProductDeleted()
                                 }
                             },

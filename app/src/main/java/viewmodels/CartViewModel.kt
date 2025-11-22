@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import data.CartItem
 import data.Product
 import data.ProductRepository
+import data.network.ApiResult
 import kotlinx.coroutines.launch
 
 class CartViewModel : ViewModel() {
@@ -53,35 +54,60 @@ class CartViewModel : ViewModel() {
 
     fun completePurchase(onPurchaseCompleted: () -> Unit) {
         viewModelScope.launch {
-            val productsInRepo = _cartItems.map { item ->
-                ProductRepository.findProductByIdl(item.product.id) to item
+            // Verificar stock de cada producto
+            val productsToCheck =
+                    _cartItems.map { item ->
+                        ProductRepository.findProductById(item.product.id.toLong()) to item
+                    }
+
+            // Verificar que todos los productos se obtuvieron correctamente
+            for ((productResult, cartItem) in productsToCheck) {
+                when (productResult) {
+                    is ApiResult.Success -> {
+                        val product = productResult.data
+                        if (cartItem.quantity > product.stock) {
+                            purchaseResult =
+                                    "No hay suficiente stock para ${product.name}. Compra rechazada."
+                            onPurchaseCompleted()
+                            return@launch
+                        }
+                    }
+                    is ApiResult.Error -> {
+                        purchaseResult = "Error al verificar stock: ${productResult.message}"
+                        onPurchaseCompleted()
+                        return@launch
+                    }
+                    is ApiResult.Loading -> {
+                        /* No usado */
+                    }
+                }
             }
 
-            // 1. Verificar el stock
-            val outOfStockItem = productsInRepo.find { (product, cartItem) ->
-                product == null || cartItem.quantity > product.stock
+            // Actualizar stock de cada producto
+            for ((productResult, item) in productsToCheck) {
+                if (productResult is ApiResult.Success) {
+                    val product = productResult.data
+                    val updatedProduct = product.copy(stock = product.stock - item.quantity)
+
+                    when (val updateResult = ProductRepository.updateProduct(updatedProduct)) {
+                        is ApiResult.Success -> {
+                            /* Continuar */
+                        }
+                        is ApiResult.Error -> {
+                            purchaseResult = "Error al actualizar stock: ${updateResult.message}"
+                            onPurchaseCompleted()
+                            return@launch
+                        }
+                        is ApiResult.Loading -> {
+                            /* No usado */
+                        }
+                    }
+                }
             }
 
-            if (outOfStockItem != null) {
-                val (product, cartItem) = outOfStockItem
-                val productName = product?.name ?: cartItem.product.name
-                purchaseResult = "No hay suficiente stock para $productName. Compra rechazada."
-                onPurchaseCompleted()
-                return@launch
-            }
-
-            // 2. Actualizar el repositorio si hay stock
-            for ((product, item) in productsInRepo) {
-                // product no puede ser nulo aquí por la comprobación anterior
-                val updatedProduct = product!!.copy(stock = product.stock - item.quantity)
-                ProductRepository.updateProduct(updatedProduct)
-            }
-
-            // 3. Limpiar el carrito y establecer el mensaje de éxito
+            // Limpiar carrito y mostrar éxito
             _cartItems.clear()
             purchaseResult = "¡Compra realizada correctamente!"
-
-            // 4. Ejecutar el callback para navegar
             onPurchaseCompleted()
         }
     }
