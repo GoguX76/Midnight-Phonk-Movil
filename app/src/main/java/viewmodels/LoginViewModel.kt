@@ -1,12 +1,13 @@
 package viewmodels
 
 import androidx.compose.runtime.*
-import validations.AccountValidations
 import androidx.lifecycle.ViewModel
 import data.User
 import data.UserRepository
+import data.network.ApiResult
+import validations.AccountValidations
 
-class LoginViewModel: ViewModel() {
+class LoginViewModel : ViewModel() {
     var email by mutableStateOf("")
         private set
 
@@ -30,40 +31,48 @@ class LoginViewModel: ViewModel() {
     }
 
     fun isValid(): Boolean {
-        return emailError == null && passwordError == null &&
-                email.isNotEmpty() && password.isNotEmpty()
+        return emailError == null &&
+                passwordError == null &&
+                email.isNotEmpty() &&
+                password.isNotEmpty()
     }
 
     suspend fun loginUser(): LoginResult {
-        // Validar email vacío
         if (email.isBlank()) {
             return LoginResult.Error("El email no puede estar vacío")
         }
 
-        // Validar contraseña vacía
         if (password.isBlank()) {
             return LoginResult.Error("La contraseña no puede estar vacía")
         }
 
-        // Buscar el usuario por email
-        val user = UserRepository.findUserByEmail(email)
-        if (user == null) {
-            return LoginResult.Error("Usuario no encontrado")
+        // Buscar usuario por email usando API
+        return when (val result = UserRepository.findUserByEmail(email)) {
+            is ApiResult.Success -> {
+                val user = result.data
+                if (user == null) {
+                    LoginResult.Error("Usuario no encontrado")
+                } else {
+                    // Verificar contraseña
+                    val passwordHash = password.hashCode().toString()
+                    if (user.passwordHash != passwordHash) {
+                        LoginResult.Error("Contraseña incorrecta")
+                    } else {
+                        LoginResult.Success(user)
+                    }
+                }
+            }
+            is ApiResult.Error -> {
+                LoginResult.Error(result.message)
+            }
+            is ApiResult.Loading -> {
+                LoginResult.Error("Cargando...")
+            }
         }
-
-        // Verificar la contraseña
-        val passwordHash = password.hashCode().toString()
-        if (user.passwordHash != passwordHash) {
-            return LoginResult.Error("Contraseña incorrecta")
-        }
-
-        return LoginResult.Success(user)
     }
 }
 
-/**
- * Resultado de la operación de login
- */
+// Resultado de la operación de login
 sealed class LoginResult {
     data class Success(val user: User) : LoginResult()
     data class Error(val message: String) : LoginResult()

@@ -25,152 +25,172 @@ import viewmodels.ProductViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProductView(
-    productId: Int,
-    onProductUpdated: () -> Unit,
-    onNavigateUp: () -> Unit
-) {
+fun EditProductView(productId: Int, onProductUpdated: () -> Unit, onNavigateUp: () -> Unit) {
     val application = LocalContext.current.applicationContext as Application
-    val productViewModel: ProductViewModel = viewModel(factory = ProductViewModelFactory(application))
+    val productViewModel: ProductViewModel =
+            viewModel(factory = ProductViewModelFactory(application))
 
     LaunchedEffect(productId) {
-        val product = ProductRepository.findProductByIdl(productId)
-        if (product != null) {
-            productViewModel.loadProduct(product)
+        when (val result = ProductRepository.findProductById(productId.toLong())) {
+            is data.network.ApiResult.Success -> {
+                productViewModel.loadProduct(result.data)
+            }
+            is data.network.ApiResult.Error -> {
+                /* Mostrar error */
+            }
+            is data.network.ApiResult.Loading -> {
+                /* No usado */
+            }
         }
     }
 
     var categoryExpanded by remember { mutableStateOf(false) }
     val categories = listOf("Sample Packs", "Sound Kits", "Plugins")
 
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri -> productViewModel.productImageUri = uri }
-    )
+    val imagePickerLauncher =
+            rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.GetContent(),
+                    onResult = { uri -> productViewModel.productImageUri = uri }
+            )
 
     GradientBackgroundHome {
         Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Editar producto") },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color(0xFF6A0DAD),
-                        titleContentColor = Color.White
-                    ),
-                    navigationIcon = {
-                        IconButton(onClick = onNavigateUp) {
-                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
-                        }
-                    }
-                )
-            },
-            containerColor = Color.Transparent
+                topBar = {
+                    TopAppBar(
+                            title = { Text("Editar producto") },
+                            colors =
+                                    TopAppBarDefaults.topAppBarColors(
+                                            containerColor = Color(0xFF6A0DAD),
+                                            titleContentColor = Color.White
+                                    ),
+                            navigationIcon = {
+                                IconButton(onClick = onNavigateUp) {
+                                    Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = "Back",
+                                            tint = Color.White
+                                    )
+                                }
+                            }
+                    )
+                },
+                containerColor = Color.Transparent
         ) { paddingValues ->
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier =
+                            Modifier.fillMaxSize()
+                                    .padding(paddingValues)
+                                    .padding(16.dp)
+                                    .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 OutlinedTextField(
-                    value = productViewModel.productName,
-                    onValueChange = { productViewModel.productName = it },
-                    label = { Text("Nombre *") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedIndicatorColor = Color.White,
-                        unfocusedIndicatorColor = Color.Gray,
-                        focusedLabelColor = Color.White,
-                        unfocusedLabelColor = Color.Gray,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                        value = productViewModel.productName,
+                        onValueChange = { productViewModel.productName = it },
+                        label = { Text("Nombre *") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors =
+                                TextFieldDefaults.colors(
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White,
+                                        cursorColor = Color.White,
+                                        focusedIndicatorColor = Color.White,
+                                        unfocusedIndicatorColor = Color.Gray,
+                                        focusedLabelColor = Color.White,
+                                        unfocusedLabelColor = Color.Gray,
+                                        focusedContainerColor = Color.Transparent,
+                                        unfocusedContainerColor = Color.Transparent
+                                )
                 )
                 OutlinedTextField(
-                    value = productViewModel.productDescription,
-                    onValueChange = { productViewModel.productDescription = it },
-                    label = { Text("Descripción") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedIndicatorColor = Color.White,
-                        unfocusedIndicatorColor = Color.Gray,
-                        focusedLabelColor = Color.White,
-                        unfocusedLabelColor = Color.Gray,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                        value = productViewModel.productDescription,
+                        onValueChange = { productViewModel.productDescription = it },
+                        label = { Text("Descripción") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors =
+                                TextFieldDefaults.colors(
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White,
+                                        cursorColor = Color.White,
+                                        focusedIndicatorColor = Color.White,
+                                        unfocusedIndicatorColor = Color.Gray,
+                                        focusedLabelColor = Color.White,
+                                        unfocusedLabelColor = Color.Gray,
+                                        focusedContainerColor = Color.Transparent,
+                                        unfocusedContainerColor = Color.Transparent
+                                )
                 )
                 OutlinedTextField(
-                    value = productViewModel.productPrice,
-                    onValueChange = { productViewModel.productPrice = it },
-                    label = { Text("Precio *") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedIndicatorColor = Color.White,
-                        unfocusedIndicatorColor = Color.Gray,
-                        focusedLabelColor = Color.White,
-                        unfocusedLabelColor = Color.Gray,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                        value = productViewModel.productPrice,
+                        onValueChange = { productViewModel.productPrice = it },
+                        label = { Text("Precio *") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors =
+                                TextFieldDefaults.colors(
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White,
+                                        cursorColor = Color.White,
+                                        focusedIndicatorColor = Color.White,
+                                        unfocusedIndicatorColor = Color.Gray,
+                                        focusedLabelColor = Color.White,
+                                        unfocusedLabelColor = Color.Gray,
+                                        focusedContainerColor = Color.Transparent,
+                                        unfocusedContainerColor = Color.Transparent
+                                )
                 )
                 OutlinedTextField(
-                    value = productViewModel.productStock,
-                    onValueChange = { productViewModel.productStock = it },
-                    label = { Text("Stock") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedIndicatorColor = Color.White,
-                        unfocusedIndicatorColor = Color.Gray,
-                        focusedLabelColor = Color.White,
-                        unfocusedLabelColor = Color.Gray,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
+                        value = productViewModel.productStock,
+                        onValueChange = { productViewModel.productStock = it },
+                        label = { Text("Stock") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors =
+                                TextFieldDefaults.colors(
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White,
+                                        cursorColor = Color.White,
+                                        focusedIndicatorColor = Color.White,
+                                        unfocusedIndicatorColor = Color.Gray,
+                                        focusedLabelColor = Color.White,
+                                        unfocusedLabelColor = Color.Gray,
+                                        focusedContainerColor = Color.Transparent,
+                                        unfocusedContainerColor = Color.Transparent
+                                )
                 )
 
                 // Category Dropdown
                 Box {
                     OutlinedButton(
-                        onClick = { categoryExpanded = true },
-                        modifier = Modifier.fillMaxWidth()
+                            onClick = { categoryExpanded = true },
+                            modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(productViewModel.productCategory, style = MaterialTheme.typography.bodyMedium, color = Color.White)
+                        Text(
+                                productViewModel.productCategory,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White
+                        )
                         Spacer(Modifier.weight(1f))
                         Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Category",
-                            tint = Color.White
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = "Category",
+                                tint = Color.White
                         )
                     }
                     DropdownMenu(
-                        expanded = categoryExpanded,
-                        onDismissRequest = { categoryExpanded = false },
-                        modifier = Modifier.fillMaxWidth()
+                            expanded = categoryExpanded,
+                            onDismissRequest = { categoryExpanded = false },
+                            modifier = Modifier.fillMaxWidth()
                     ) {
                         categories.forEach { cat ->
                             DropdownMenuItem(
-                                text = { Text(cat, style = MaterialTheme.typography.bodyMedium) },
-                                onClick = {
-                                    productViewModel.productCategory = cat
-                                    categoryExpanded = false
-                                }
+                                    text = {
+                                        Text(cat, style = MaterialTheme.typography.bodyMedium)
+                                    },
+                                    onClick = {
+                                        productViewModel.productCategory = cat
+                                        categoryExpanded = false
+                                    }
                             )
                         }
                     }
@@ -178,26 +198,30 @@ unfocusedTextColor = Color.White,
 
                 // Photo Picker
                 OutlinedButton(
-                    onClick = { imagePickerLauncher.launch("image/*") },
-                    modifier = Modifier.fillMaxWidth()
+                        onClick = { imagePickerLauncher.launch("image/*") },
+                        modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(productViewModel.productImageUri?.let { "Imagen seleccionada" } ?: "Foto (Picker)", style = MaterialTheme.typography.bodyMedium, color = Color.White)
+                    Text(
+                            productViewModel.productImageUri?.let { "Imagen seleccionada" }
+                                    ?: "Foto (Picker)",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White
+                    )
                 }
 
                 Spacer(Modifier.weight(1f))
 
                 // Save/Cancel Buttons
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = onNavigateUp) {
                         Text("Cancelar", style = MaterialTheme.typography.labelLarge)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = { productViewModel.updateProduct(productId, onProductUpdated) }) {
-                        Text("Actualizar", style = MaterialTheme.typography.labelLarge)
-                    }
+                    Button(
+                            onClick = {
+                                productViewModel.updateProduct(productId, onProductUpdated)
+                            }
+                    ) { Text("Actualizar", style = MaterialTheme.typography.labelLarge) }
                 }
             }
         }
