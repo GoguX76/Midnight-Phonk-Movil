@@ -1,11 +1,16 @@
 package data
 
+import com.google.gson.annotations.SerializedName
+
 data class Product(
     val id: Int = 0,
-    val name: String,
+    val title: String,
     val price: Double,
-    val description: String = "",
-    val imageUrl: String = "",
+    @SerializedName("desc")
+    val description: String,
+    @SerializedName("fullDesc")
+    val fullDesc: String,
+    val image: String = "",
     val stock: Int = 0,
     val category: String = ""
 )

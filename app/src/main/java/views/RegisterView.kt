@@ -68,6 +68,25 @@ fun RegisterView(onNavigateToLogin: () -> Unit,
             )
 
             OutlinedTextField(
+                value = viewModel.name,
+                onValueChange = { viewModel.updateName(it) },
+                label = { Text("Ingrese su nombre") },
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppTextFieldColorsRegister()
+            )
+
+            if (viewModel.nameError != null) {
+                Text(
+                    text = viewModel.nameError!!,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Red,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
                 value = viewModel.email,
                 onValueChange = { viewModel.updateEmail(it) },
                 label = { Text("Ingrese su correo") },

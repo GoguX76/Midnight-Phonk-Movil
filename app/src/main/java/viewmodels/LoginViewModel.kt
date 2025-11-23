@@ -54,8 +54,7 @@ class LoginViewModel : ViewModel() {
                     LoginResult.Error("Usuario no encontrado")
                 } else {
                     // Verificar contraseña
-                    val passwordHash = password.hashCode().toString()
-                    if (user.passwordHash != passwordHash) {
+                    if (user.password != password) {
                         LoginResult.Error("Contraseña incorrecta")
                     } else {
                         LoginResult.Success(user)

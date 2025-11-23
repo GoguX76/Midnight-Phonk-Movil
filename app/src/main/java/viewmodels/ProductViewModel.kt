@@ -2,6 +2,7 @@ package viewmodels
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,7 +19,7 @@ import kotlinx.coroutines.withContext
 
 class ProductViewModel(application: Application) : AndroidViewModel(application) {
     var productName by mutableStateOf("")
-    var productDescription by mutableStateOf("")
+    var productDescription by mutableStateOf("Sin descripción")
     var productPrice by mutableStateOf("")
     var productStock by mutableStateOf("")
     var productCategory by mutableStateOf("Categoría")
@@ -49,13 +50,16 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
 
             val newProduct =
                     Product(
-                            name = productName,
-                            description = productDescription,
+                            title = productName,
+                            description = if (productDescription.isBlank()) "Sin descripción" else productDescription,
+                            fullDesc = "Sin descripción detallada",
                             price = productPrice.toDoubleOrNull() ?: 0.0,
-                            imageUrl = imageUrl,
+                            image = imageUrl,
                             stock = productStock.toIntOrNull() ?: 0,
                             category = productCategory
                     )
+
+            Log.d("ProductViewModel", "Producto a enviar: title=${newProduct.title}, desc=${newProduct.description}, fullDesc=${newProduct.fullDesc}, price=${newProduct.price}, stock=${newProduct.stock}, category=${newProduct.category}")
 
             when (val result = ProductRepository.insertProduct(newProduct)) {
                 is ApiResult.Success -> {
@@ -74,7 +78,7 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun loadProduct(product: Product) {
-        productName = product.name
+        productName = product.title
         productDescription = product.description
         productPrice = product.price.toString()
         productStock = product.stock.toString()
@@ -96,7 +100,7 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
                             saveImageToInternalStorage(productImageUri!!)
                         } else {
                             when (existingProductResult) {
-                                is ApiResult.Success -> existingProductResult.data.imageUrl
+                                is ApiResult.Success -> existingProductResult.data.image
                                 else -> ""
                             }
                         }
@@ -105,10 +109,11 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
             val updatedProduct =
                     Product(
                             id = productId,
-                            name = productName,
-                            description = productDescription,
+                            title = productName,
+                            description = if (productDescription.isBlank()) "Sin descripción" else productDescription,
+                            fullDesc = "Sin descripción detallada",
                             price = productPrice.toDoubleOrNull() ?: 0.0,
-                            imageUrl = imageUrl,
+                            image = imageUrl,
                             stock = productStock.toIntOrNull() ?: 0,
                             category = productCategory
                     )

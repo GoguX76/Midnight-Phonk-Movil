@@ -156,7 +156,7 @@ fun CatalogView(
 
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     itemsIndexed(
-                            products.filter { it.name.contains(searchQuery, ignoreCase = true) }
+                            products.filter { it.title.contains(searchQuery, ignoreCase = true) }
                     ) { index, product ->
                         // Animación 4: Aparición escalonada de productos
                         var isVisible by remember { mutableStateOf(false) }
@@ -220,7 +220,7 @@ fun ProductItem(product: Product, onProductClick: () -> Unit, cartViewModel: Car
                 horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                    text = product.name,
+                    text = product.title,
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White
             )

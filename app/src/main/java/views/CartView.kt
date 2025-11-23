@@ -114,7 +114,7 @@ fun CartItemView(item: CartItem, cartViewModel: CartViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Text(item.product.name, style = MaterialTheme.typography.titleMedium, color = Color.White)
+                Text(item.product.title, style = MaterialTheme.typography.titleMedium, color = Color.White)
                 Text("Precio: $${item.product.price}", style = MaterialTheme.typography.bodySmall, color = Color.White)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {

@@ -17,6 +17,9 @@ class RegisterViewModel : ViewModel() {
     var confirmPassword by mutableStateOf("")
         private set
 
+    var name by mutableStateOf("")
+        private set
+
     var emailError by mutableStateOf<String?>(null)
         private set
 
@@ -24,6 +27,9 @@ class RegisterViewModel : ViewModel() {
         private set
 
     var confirmPasswordError by mutableStateOf<String?>(null)
+        private set
+
+    var nameError by mutableStateOf<String?>(null)
         private set
 
     fun updateEmail(newEmail: String) {
@@ -47,13 +53,24 @@ class RegisterViewModel : ViewModel() {
                 }
     }
 
+    fun updateName(newName: String) {
+        name = newName
+        nameError = if (newName.isBlank()) {
+            "El nombre no puede estar vacío"
+        } else {
+            null
+        }
+    }
+
     fun isValid(): Boolean {
         return emailError == null &&
                 passwordError == null &&
                 confirmPasswordError == null &&
+                nameError == null &&
                 email.isNotEmpty() &&
                 password.isNotEmpty() &&
-                confirmPassword.isNotEmpty()
+                confirmPassword.isNotEmpty() &&
+                name.isNotEmpty()
     }
 
     suspend fun registerUser(): RegistrationResult {
@@ -80,8 +97,7 @@ class RegisterViewModel : ViewModel() {
                     RegistrationResult.Error("El email ya está en uso")
                 } else {
                     // Crear nuevo usuario
-                    val passwordHash = password.hashCode().toString()
-                    val newUser = User(email = email, passwordHash = passwordHash)
+                    val newUser = User(email = email, password = password, name = name)
 
                     when (val insertResult = UserRepository.insertUser(newUser)) {
                         is ApiResult.Success -> {

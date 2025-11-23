@@ -67,7 +67,7 @@ class CartViewModel : ViewModel() {
                         val product = productResult.data
                         if (cartItem.quantity > product.stock) {
                             purchaseResult =
-                                    "No hay suficiente stock para ${product.name}. Compra rechazada."
+                                    "No hay suficiente stock para ${product.title}. Compra rechazada."
                             onPurchaseCompleted()
                             return@launch
                         }

@@ -39,7 +39,7 @@ fun ProductDetailView(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(product?.name ?: "") },
+                    title = { Text(product?.title ?: "") },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color(0xFF6A0DAD),
                         titleContentColor = Color.White
@@ -65,7 +65,7 @@ fun ProductDetailView(
                         .padding(16.dp)
                 ) {
                     AsyncImage(
-                        model = p.imageUrl,
+                        model = p.image,
                         contentDescription = "Product Image",
                         modifier = Modifier
                             .fillMaxWidth()
@@ -73,7 +73,7 @@ fun ProductDetailView(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = p.name,
+                        text = p.title,
                         style = MaterialTheme.typography.headlineSmall,
                         color = Color.White
                     )
