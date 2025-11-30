@@ -40,16 +40,7 @@ object UserRepository {
     }
 
     // Elimina un usuario por ID
-    suspend fun deleteUser(id: Long): ApiResult<Boolean> {
-        return try {
-            val response = RetrofitClient.apiService.deleteUser(id)
-            if (response.isSuccessful) {
-                ApiResult.Success(true)
-            } else {
-                ApiResult.Error("Error al eliminar usuario: ${response.code()}")
-            }
-        } catch (e: Exception) {
-            ApiResult.Error("Error al eliminar usuario: ${e.message}", e)
-        }
+    suspend fun deleteUser(id: Long): ApiResult<Unit> {
+        return safeApiCall { RetrofitClient.apiService.deleteUser(id) }
     }
 }
