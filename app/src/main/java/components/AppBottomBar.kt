@@ -24,7 +24,8 @@ fun AppBottomBar(
         MainScreenRoutes.HOME to "Inicio",
         MainScreenRoutes.ABOUT_US to "Nosotros",
         MainScreenRoutes.CATALOG to "Catálogo",
-        MainScreenRoutes.CART to "Carrito"
+        MainScreenRoutes.CART to "Carrito",
+        MainScreenRoutes.ACCOUNT to "Cuenta"
     )
 
     val gradientColors = listOf(

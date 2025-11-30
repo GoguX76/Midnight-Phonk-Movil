@@ -45,6 +45,7 @@ fun AppNavigation() {
 
         composable(AppScreens.Main.route) {
             MainScreenView(
+                navController = navController,
                 onNavigateToAddProduct = { navController.navigate(AppScreens.AddProduct.route) },
                 onNavigateToProductDetail = { navController.navigate("${AppScreens.ProductDetail.route}/$it") },
                 onNavigateToPurchaseResult = { navController.navigate(AppScreens.PurchaseResult.route) },
@@ -97,6 +98,11 @@ fun AppNavigation() {
                     cartViewModel.clearPurchaseResult() // Limpia el mensaje después de navegar
                 }
             )
+        }
+
+        composable(AppScreens.Purchases.route) {
+            val accountViewModel: viewmodels.AccountViewModel = viewModel()
+            PurchasesView(navController = navController, viewModel = accountViewModel)
         }
     }
 }

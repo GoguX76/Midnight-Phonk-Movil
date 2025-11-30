@@ -10,6 +10,8 @@ sealed class AppScreens(val route: String) {
     object ProductDetail : AppScreens("product_detail")
     object EditProduct : AppScreens("edit_product") // Nueva ruta
     object PurchaseResult : AppScreens("purchase_result")
+    object Account : AppScreens("account")
+    object Purchases : AppScreens("purchases")
 }
 
 // Rutas INTERNAS de la pantalla principal (para la barra de navegación)
@@ -18,4 +20,5 @@ object MainScreenRoutes {
     const val ABOUT_US = "about_us"
     const val CATALOG = "catalog"
     const val CART = "cart"
+    const val ACCOUNT = "account"
 }

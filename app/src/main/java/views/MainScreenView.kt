@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -19,6 +20,7 @@ import viewmodels.CartViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreenView(
+    navController: NavController,
     onNavigateToAddProduct: () -> Unit,
     onNavigateToProductDetail: (Int) -> Unit,
     onNavigateToPurchaseResult: () -> Unit,
@@ -67,6 +69,9 @@ fun MainScreenView(
                     cartViewModel = cartViewModel,
                     onNavigateToResult = onNavigateToPurchaseResult
                 )
+            }
+            composable(MainScreenRoutes.ACCOUNT) {
+                AccountView(navController = navController)
             }
         }
     }
