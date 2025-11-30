@@ -57,6 +57,7 @@ class LoginViewModel : ViewModel() {
                     if (user.password != password) {
                         LoginResult.Error("Contraseña incorrecta")
                     } else {
+                        UserSession.currentUser = user
                         LoginResult.Success(user)
                     }
                 }

@@ -28,8 +28,8 @@ object PurchaseRepository {
     }
 
     // Crea una nueva compra
-    suspend fun createPurchase(userId: Long, productId: Long, quantity: Int): ApiResult<Purchase> {
-        return safeApiCall { RetrofitClient.apiService.createPurchase(userId, productId, quantity) }
+    suspend fun createPurchase(request: data.network.dto.PurchaseRequest): ApiResult<List<Purchase>> {
+        return safeApiCall { RetrofitClient.apiService.createPurchase(request) }
     }
 
     // Elimina una compra

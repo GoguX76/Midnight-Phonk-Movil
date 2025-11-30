@@ -105,6 +105,40 @@ class CartViewModel : ViewModel() {
                 }
             }
 
+            // Crear la compra en el backend
+            val currentUser = data.UserSession.currentUser
+            if (currentUser != null) {
+                val purchaseItems = _cartItems.map {
+                    data.network.dto.PurchaseItemDto(
+                        id = it.product.id.toLong(),
+                        title = it.product.title,
+                        price = it.product.price,
+                        quantity = it.quantity,
+                        image = it.product.image
+                    )
+                }
+
+                val request = data.network.dto.PurchaseRequest(
+                    userId = currentUser.email,
+                    userName = currentUser.name,
+                    shippingDetails = "Mobile App Purchase", // Placeholder or implement shipping details UI
+                    items = purchaseItems,
+                    totalAmount = total
+                )
+
+                val createResult = data.PurchaseRepository.createPurchase(request)
+                if (createResult is ApiResult.Error) {
+                    // Idealmente haríamos rollback del stock aquí, pero por simplicidad solo notificamos error
+                    purchaseResult = "Error al registrar compra: ${createResult.message}"
+                    onPurchaseCompleted()
+                    return@launch
+                }
+            } else {
+                purchaseResult = "Error: Usuario no identificado."
+                onPurchaseCompleted()
+                return@launch
+            }
+
             // Limpiar carrito y mostrar éxito
             _cartItems.clear()
             purchaseResult = "¡Compra realizada correctamente!"

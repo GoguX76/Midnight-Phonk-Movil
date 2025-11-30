@@ -49,12 +49,9 @@ interface ApiService {
     suspend fun getPurchasesByProductId(@Path("productId") productId: Long): List<Purchase>
 
     // Crea una compra (usa @Query porque el backend usa @RequestParam)
+    // Crea una compra enviando el objeto completo
     @POST("api/purchases")
-    suspend fun createPurchase(
-            @Query("userId") userId: Long,
-            @Query("productId") productId: Long,
-            @Query("quantity") quantity: Int
-    ): Purchase
+    suspend fun createPurchase(@Body request: data.network.dto.PurchaseRequest): List<Purchase>
 
     @DELETE("api/purchases/{id}") suspend fun deletePurchase(@Path("id") id: Long): Response<Unit>
 }
